@@ -8,6 +8,7 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 
@@ -19,8 +20,10 @@ import java.util.*;
 public class TestServiceImpl {
     private static final Logger logger = LoggerFactory.getLogger(TestServiceImpl.class);
 
-    private String kafkaEndpoint = "192.168.68.63";
-    private String kafkaPort = "9092";
+    @Value("${service.kafka.address}")
+    private String kafkaEndpoint;
+    @Value("${service.kafka.port}")
+    private String kafkaPort;
 
     private double getRandomNumberUsingNextDouble(double min, double max) {
         Random random = new Random();
@@ -75,15 +78,11 @@ public class TestServiceImpl {
     }
 
     public void writeLotsOfData(int insertionSize, String kafkaTopicName) {
-        String kafka_node_IP = kafkaEndpoint;
-        String kafka_port = ":9092";
-        String kafka_endpoint = kafka_node_IP + kafka_port;
-
         //--------------------------------------------------
         // [OPTIONAL] Code Segment For Producing to a Kafka Topic
         //--------------------------------------------------
         Properties props = new Properties();
-        props.put("bootstrap.servers", kafka_endpoint);
+        props.put("bootstrap.servers", kafkaEndpoint + ":" + kafkaPort);
         props.put("acks", "all");
         props.put("retries", 0);
         props.put("batch.size", 16384);
@@ -114,7 +113,10 @@ public class TestServiceImpl {
         logger.info("__Kafka Producer starting");
         Producer<String, String> producer = new KafkaProducer<>(props);
         for (int i = 1; i <= insertionSize; i++) {
-            producer.send(new ProducerRecord<>(kafkaTopicName, Integer.toString(i), "{\"id\":\"" + i + "_WOW" + "\"}"));
+            producer.send(new ProducerRecord<>(kafkaTopicName, Integer.toString(i),
+                    "{\"id\":\"" + i + "_WOW" + "\"," +
+                            " \"payload\": \"c2RmYXNmdnNkZmR2ZmRzMjRmcjNc2c2RmYXNmdnNkZmR2ZmRzMjRmcjNc2RmYXNmdnNkZmR2ZmRzMjRmcjNc2RmYXNmdnNkZmR2ZmRzMjRmcjNc2RmYXNmdnNkZmR2ZmRzMjRmcjNc2RmYXNmdnNkZmR2ZmRzM0MzR0MzR0NHQzdHZ3NXQ1dHd0MzR0c2RmYXNmdnNkZmR2ZmRzMjRmcjN0MzR0MzR0NHQzdHZ3NXQ1dHd0MzR0c2RmYXNmdnNkZmR2ZmRzMjRmcjN0MzR0MzR0NHQzdHZ3NXQ1dHd0MzR0c2RmYXNmdnNkZmR2ZmRzMjRmcjN0MzR0MzR0NHQzdHZ3NXQ1dHd0MzR0c2RmYXNmdnNkZmR2ZmRzMjRmcjN0MzR0MzR0NHQzdHZ3NXQ1dHd0MzR0c2RmYXNmdnNkZmR2ZmRzMjRmcjN0MzR0MzR0NHQzdHZ3NXQ1dHd0MzR0c2RmYXNmdnNkZmR2ZmRzMjRmcjN0MzR0MzR0NHQzdHZ3NXQ1dHd0MzR0c2RmYXNmdnNkZmR2ZmRzMjRmcjN0MzR0MzR0NHQzdHZ3NXQ1dHd0MzR0c2RmYXNmdnNkZmR2ZmRzMjRmcjN0MzR0MzR0NHQzdHZ3NXQ1dHd0MzR0c2RmYXNmdnNkZmR2ZmRzMjRmcjN0MzR0MzR0NHQzdHZ3NXQ1dHd0MzR0c2RmYXNmdnNkZmR2ZmRzMjRmcjN0MzR0MzR0NHQzdHZ3NXQ1dHd0MzR0c2RmYXNmdnNkZmR2ZmRzMjRmcjN0MzR0MzR0NHQzdHZ3NXQ1dHd0MzR0c2RmYXNmdnNkZmR2ZmRzMjRmcjN0MzR0MzR0NHQzdHZ3NXQ1dHd0MzR0c2RmYXNmdnNkZmR2ZmRzMjRmcjN0MzR0MzR0NHQzdHZ3NXQ1dHd0MzR0c2RmYXNmdnNkZmR2ZmRzMjRmcjN0MzR0MzR0NHQzdHZ3NXQ1dHd0MzR0c2RmYXNmdnNkZmR2ZmRzMjRmcjN0MzR0MzR0NHQzdHZ3NXQ1dHd0MzR0\"" +
+                            "}"));
             //logger.info("Produced msg #" + i);
         }
         logger.info("__Kafka Producer closing");

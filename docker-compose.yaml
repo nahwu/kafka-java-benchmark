@@ -14,6 +14,9 @@ services:
       - "8003:8003"
     depends_on:
       - "kafka"
+    environment:
+      SERVICE_KAFKA_ADDRESS: kafka
+      SERVICE_KAFKA_PORT: 9092
 
   zookeeper:
     image: bitnami/zookeeper:3.8.0
@@ -29,12 +32,15 @@ services:
     networks:
       - app-tier
     ports:
-      - '9092:9092'
+      - "9092:9092"
+      - "9093:9093"
     depends_on:
-      - zookeeper
+      - "zookeeper"
     environment:
       KAFKA_CFG_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_BROKER_ID: 1
       ALLOW_PLAINTEXT_LISTENER: yes
-      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092
-      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://127.0.0.1:9092
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_CFG_LISTENERS: CLIENT://:9092,EXTERNAL://:9093
+      KAFKA_CFG_ADVERTISED_LISTENERS: CLIENT://kafka:9092,EXTERNAL://localhost:9093
+      KAFKA_CFG_INTER_BROKER_LISTENER_NAME: CLIENT

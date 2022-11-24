@@ -15,10 +15,9 @@
     docker compose stop kafka-java-benchmark-app
 
 
-# 3. Deployment Configuration
-## 3.1 Cassandra Database initial configuration
-### 3.1.1 SSH into Docker container
-    docker exec -it cassandra-4-exploration-cassandra-db-1 /bin/bash
+# 3. Logs
+
+    docker logs kafka-java-benchmark-kafka-java-benchmark-app-1 --tail 500
 
 # X.1 Concepts
 
